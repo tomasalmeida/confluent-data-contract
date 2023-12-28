@@ -1,0 +1,9 @@
+{
+  "metadata": {
+    "properties": {
+      "owner": "CRM",
+      "owner_email": "crm@company.com",
+      "GDPR": "true"
+    }
+  }
+}

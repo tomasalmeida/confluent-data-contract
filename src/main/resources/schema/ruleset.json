@@ -1,0 +1,43 @@
+{
+  "ruleSet": {
+    "domainRules": [
+      {
+        "name": "checkFirstNameSize",
+        "kind": "CONDITION",
+        "type": "CEL",
+        "mode": "WRITE",
+        "expr": "size(message.firstName) > 3",
+        "onFailure": "ERROR"
+      },
+      {
+        "name": "checkLastNameSize",
+        "kind": "CONDITION",
+        "type": "CEL",
+        "mode": "WRITE",
+        "expr": "size(message.lastName) > 3",
+        "onFailure": "DLQ",
+        "params": {
+          "dlq.topic": "users-dlq",
+          "producer": "test"
+        },
+        "disabled": false
+      },
+      {
+        "name": "checkAge",
+        "kind": "CONDITION",
+        "type": "CEL",
+        "mode": "WRITE",
+        "expr": "message.age > 17",
+        "onFailure": "ERROR"
+      },
+      {
+        "name": "fillFullName",
+        "kind": "TRANSFORM",
+        "type": "CEL",
+        "mode": "READ",
+        "expr": "size(message.fullName) <= 3 ? message.fullName = message.firstName _+_ message.lastName",
+        "disabled": true
+      }
+    ]
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "name": "User",
+  "namespace": "com.tomasalmeida.data.contract",
+  "type": "record",
+  "fields": [
+    {
+      "name": "firstName",
+      "type": "string"
+    },
+    {
+      "name": "lastName",
+      "type": "string"
+    },
+    {
+      "name": "fullName",
+      "type": "string",
+      "default": ""
+    },
+    {
+      "name": "age",
+      "type": "int"
+    }
+  ]
+}

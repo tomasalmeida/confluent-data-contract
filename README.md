@@ -36,11 +36,18 @@ Control center is available under http://localhost:9021
       --data @src/main/resources/schema/ruleset.json | jq
 ```
 
-## run
+## run producer
 
 ```shell
   mvn clean package
   java -classpath target/data-contract-example-1.0.0-SNAPSHOT-jar-with-dependencies.jar com.tomasalmeida.data.contract.runner.ProducerRunner
+```
+
+## run consumer
+
+```shell
+  mvn clean package
+  java -classpath target/data-contract-example-1.0.0-SNAPSHOT-jar-with-dependencies.jar com.tomasalmeida.data.contract.runner.ConsumerRunner
 ```
 
 

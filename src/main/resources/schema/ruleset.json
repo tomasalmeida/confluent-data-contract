@@ -33,10 +33,10 @@
       {
         "name": "fillFullName",
         "kind": "TRANSFORM",
-        "type": "CEL",
+        "type": "CEL_FIELD",
         "mode": "READ",
-        "expr": "size(message.fullName) <= 3 ? message.fullName = message.firstName _+_ message.lastName",
-        "disabled": true
+        "expr": "name == \"fullName\" ; size(value) <= 3 ? message.firstName + ' ' + message.lastName : value",
+        "disabled": false
       }
     ]
   }

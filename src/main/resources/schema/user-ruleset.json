@@ -2,28 +2,33 @@
   "ruleSet": {
     "domainRules": [
       {
-        "name": "checkFirstNameSize",
+        "name": "user-checkFirstNameSize",
         "kind": "CONDITION",
         "type": "CEL",
         "mode": "WRITE",
         "expr": "size(message.firstName) > 3",
-        "onFailure": "ERROR"
+        "onFailure": "DLQ",
+        "params": {
+          "dlq.topic": "crm.generic-dlq",
+          "producer": "userProducer"
+        },
+        "disabled": false
       },
       {
-        "name": "checkLastNameSize",
+        "name": "user-checkLastNameSize",
         "kind": "CONDITION",
         "type": "CEL",
         "mode": "WRITE",
         "expr": "size(message.lastName) > 3",
         "onFailure": "DLQ",
         "params": {
-          "dlq.topic": "users-dlq",
-          "producer": "test"
+          "dlq.topic": "crm.generic-dlq",
+          "producer": "userProducer"
         },
         "disabled": false
       },
       {
-        "name": "checkAge",
+        "name": "user-checkAge",
         "kind": "CONDITION",
         "type": "CEL",
         "mode": "WRITE",
@@ -31,7 +36,7 @@
         "onFailure": "ERROR"
       },
       {
-        "name": "fillFullName",
+        "name": "user-fillFullName",
         "kind": "TRANSFORM",
         "type": "CEL_FIELD",
         "mode": "READ",

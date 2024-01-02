@@ -1,5 +1,6 @@
 package com.tomasalmeida.data.contract.runner;
 
+import com.tomasalmeida.data.contract.Contract;
 import com.tomasalmeida.data.contract.User;
 import com.tomasalmeida.data.contract.common.PropertiesLoader;
 import org.apache.kafka.common.errors.SerializationException;
@@ -9,18 +10,21 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.Properties;
 
 public class ProducerRunner extends Thread {
-    private static final String TOPIC_USERS = "users";
+    private static final String TOPIC_USERS = "crm.users";
+    private static final String TOPIC_CONTRACTS = "crm.contracts";
     private static final Logger LOGGER = LoggerFactory.getLogger(ProducerRunner.class);
 
-
-    private final KafkaProducer<String, User> producer;
+    private final KafkaProducer<String, User> userProducer;
+    private final KafkaProducer<String, Contract> contractProducer;
 
     public ProducerRunner() throws IOException {
         Properties properties = PropertiesLoader.load("client.properties");
-        producer = new KafkaProducer<>(properties);
+        userProducer = new KafkaProducer<>(properties);
+        contractProducer = new KafkaProducer<>(properties);
     }
 
     @Override
@@ -31,7 +35,11 @@ public class ProducerRunner extends Thread {
             produceUser("Amon", "Ra", "", 52);
             produceUser("La", "Fontaine", "", 49);
             produceUser("Young", "Sheldon Cooper", "", 7);
-            producer.close();
+            userProducer.close();
+            produceContract(1, "valid contract", LocalDate.of(2022, 02, 01),  LocalDate.of(2022, 12, 31));
+            produceContract(2, "expired contract", LocalDate.of(2022, 01, 01),  LocalDate.of(2021, 12, 31));
+            produceContract(3, "a", LocalDate.of(2022, 01, 01),  LocalDate.of(2022, 12, 31));
+            contractProducer.close();
         } catch (Exception e) {
             LOGGER.error("Ops", e);
         }
@@ -43,10 +51,25 @@ public class ProducerRunner extends Thread {
         try {
             user = new User(firstName, lastName, fullName, age);
             LOGGER.info("Sending user {}", user);
-            ProducerRecord<String, User> record1 = new ProducerRecord<>(TOPIC_USERS, user);
-            producer.send(record1);
+            ProducerRecord<String, User> userRecord = new ProducerRecord<>(TOPIC_USERS, user);
+            userProducer.send(userRecord);
         } catch (SerializationException serializationException) {
             LOGGER.error("Unable to serialize user: {}", serializationException.getCause().getMessage());
+        }
+        LOGGER.info("================");
+        Thread.sleep(1000);
+
+    }
+
+    private void produceContract(int id, String name, LocalDate creation, LocalDate expiration) throws InterruptedException {
+        Contract contract = null;
+        try {
+            contract = new Contract (id, name, creation.toString(), expiration.toString());
+            LOGGER.info("Sending contract {}", contract);
+            ProducerRecord<String, Contract> contractRecord = new ProducerRecord<>(TOPIC_CONTRACTS, contract);
+            contractProducer.send(contractRecord);
+        } catch (SerializationException serializationException) {
+            LOGGER.error("Unable to serialize contract: {}", serializationException.getCause().getMessage());
         }
         LOGGER.info("================");
         Thread.sleep(1000);

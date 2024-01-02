@@ -1,0 +1,29 @@
+{
+  "name": "Contract",
+  "namespace": "com.tomasalmeida.data.contract",
+  "type": "record",
+  "fields": [
+    {
+      "name": "id",
+      "type": "int"
+    },
+    {
+      "name": "name",
+      "type": "string"
+    },
+    {
+      "name": "creation",
+      "type": {
+        "type": "string",
+        "logicalType": "date"
+      }
+    },
+    {
+      "name": "expiration",
+      "type": {
+        "type": "string",
+        "logicalType": "date"
+      }
+    }
+  ]
+}

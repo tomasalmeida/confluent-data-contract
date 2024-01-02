@@ -1,0 +1,32 @@
+{
+  "ruleSet": {
+    "domainRules": [
+      {
+        "name": "contract-checkNameSize",
+        "kind": "CONDITION",
+        "type": "CEL",
+        "mode": "WRITE",
+        "expr": "size(message.name) > 3",
+        "onFailure": "DLQ",
+        "params": {
+          "dlq.topic": "crm.generic-dlq",
+          "producer": "contractProducer"
+        },
+        "disabled": false
+      },
+      {
+        "name": "contract-checkExpiration",
+        "kind": "CONDITION",
+        "type": "CEL",
+        "mode": "WRITE",
+        "expr": "message.creation < message.expiration",
+        "onFailure": "DLQ",
+        "params": {
+          "dlq.topic": "crm.generic-dlq",
+          "producer": "contractProducer"
+        },
+        "disabled": false
+      }
+    ]
+  }
+}

@@ -12,13 +12,6 @@
       "type": "string"
     },
     {
-      "name": "creation",
-      "type": {
-        "type": "string",
-        "logicalType": "date"
-      }
-    },
-    {
       "name": "expiration",
       "type": {
         "type": "string",

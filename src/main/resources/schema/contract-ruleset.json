@@ -17,9 +17,9 @@
       {
         "name": "contract-checkExpiration",
         "kind": "CONDITION",
-        "type": "CEL",
+        "type": "JSONATA",
         "mode": "WRITE",
-        "expr": "message.creation < message.expiration",
+        "expr": "$.expiration.$toMillis($, '[Y]-[M]-[D]') < $millis()",
         "onFailure": "DLQ",
         "params": {
           "dlq.topic": "crm.generic-dlq",

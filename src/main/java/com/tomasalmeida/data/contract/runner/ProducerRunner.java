@@ -5,6 +5,9 @@ import com.tomasalmeida.data.contract.User;
 import com.tomasalmeida.data.contract.common.PropertiesLoader;
 import io.confluent.kafka.serializers.KafkaAvroDeserializerConfig;
 import io.confluent.kafka.serializers.KafkaAvroSerializerConfig;
+import org.apache.avro.Schema;
+import org.apache.avro.generic.GenericData;
+import org.apache.avro.generic.GenericRecord;
 import org.apache.kafka.common.errors.SerializationException;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
@@ -68,13 +71,44 @@ public class ProducerRunner extends Thread {
 
     private void produceContract(int id, String name, LocalDate expiration) throws InterruptedException {
         Contract contract = null;
+        String contractSchema = "{\n" +
+                "  \"name\": \"Contract\",\n" +
+                "  \"namespace\": \"com.tomasalmeida.data.contract\",\n" +
+                "  \"type\": \"record\",\n" +
+                "  \"fields\": [\n" +
+                "    {\n" +
+                "      \"name\": \"id\",\n" +
+                "      \"type\": \"int\"\n" +
+                "    },\n" +
+                "    {\n" +
+                "      \"name\": \"name\",\n" +
+                "      \"type\": \"string\"\n" +
+                "    },\n" +
+                "    {\n" +
+                "      \"name\": \"expiration\",\n" +
+                "      \"type\": {\n" +
+                "        \"type\": \"string\",\n" +
+                "        \"logicalType\": \"date\"\n" +
+                "      }\n" +
+                "    }\n" +
+                "  ]\n" +
+                "}";
+
+        Schema.Parser parser = new Schema.Parser();
+        Schema parsedContractSchema = parser.parse(contractSchema);
+        GenericRecord avroRecord = new GenericData.Record(parsedContractSchema);
+        avroRecord.put("id", id);
+        avroRecord.put("name", name);
+        avroRecord.put("expiration", expiration.toString());
+        ProducerRecord<String, Object> contractRecord = new ProducerRecord<>(TOPIC_CONTRACTS, avroRecord);
+
         try {
             contract = new Contract (id, name, expiration.toString());
-            LOGGER.info("Sending contract {}", contract);
-            ProducerRecord<String, Object> contractRecord = new ProducerRecord<>(TOPIC_CONTRACTS, contract);
+            LOGGER.info("Sending contract {}", contractRecord);
+//            ProducerRecord<String, Object> contractRecord = new ProducerRecord<>(TOPIC_CONTRACTS, contract);
             contractProducer.send(contractRecord);
         } catch (SerializationException serializationException) {
-//            LOGGER.error("Unable to serialize contract: {}", serializationException.getCause().getMessage());
+            LOGGER.error("Unable to serialize contract: {}", serializationException.getCause().getMessage());
             LOGGER.error("a", serializationException);
         }
         LOGGER.info("================");

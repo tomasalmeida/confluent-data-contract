@@ -45,7 +45,7 @@
             <version>1.11.3</version>
         </dependency>
 
-        <!--   confluent     -->
+        <!-- confluent -->
         <dependency>
             <groupId>io.confluent</groupId>
             <artifactId>kafka-avro-serializer</artifactId>

@@ -19,7 +19,7 @@
         "kind": "CONDITION",
         "type": "JSONATA",
         "mode": "WRITE",
-        "expr": "$.expiration.$toMillis($, '[Y]-[M]-[D]') < $millis()",
+        "expr": "$millis() < $toMillis($.expiration, '[Y]-[M]-[D]')",
         "onFailure": "DLQ",
         "params": {
           "dlq.topic": "crm.generic-dlq",

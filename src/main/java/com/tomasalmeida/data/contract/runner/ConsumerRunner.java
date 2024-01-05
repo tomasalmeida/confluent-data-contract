@@ -17,8 +17,9 @@ import java.time.Duration;
 import java.util.Collections;
 import java.util.Properties;
 
+import static com.tomasalmeida.data.contract.common.PropertiesLoader.TOPIC_USERS;
+
 public class ConsumerRunner extends Thread {
-    private static final String TOPIC_USERS = "users";
     private static final Logger LOGGER = LoggerFactory.getLogger(ConsumerRunner.class);
 
     private final Properties properties;

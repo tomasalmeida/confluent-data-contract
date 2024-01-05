@@ -13,9 +13,10 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.util.Properties;
 
+import static com.tomasalmeida.data.contract.common.PropertiesLoader.TOPIC_CONTRACTS;
+import static com.tomasalmeida.data.contract.common.PropertiesLoader.TOPIC_USERS;
+
 public class ProducerRunner extends Thread {
-    private static final String TOPIC_USERS = "crm.users";
-    private static final String TOPIC_CONTRACTS = "crm.contracts";
     private static final Logger LOGGER = LoggerFactory.getLogger(ProducerRunner.class);
 
     private final KafkaProducer<String, User> userProducer;

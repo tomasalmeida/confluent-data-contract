@@ -24,8 +24,8 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>17</java.version>
         <slf4j-api.version>1.7.36</slf4j-api.version>
-        <confluent.kafka.version>7.5.2-ce</confluent.kafka.version>
-        <confluent.schema.version>7.5.2</confluent.schema.version>
+        <confluent.kafka.version>7.6.0-ce</confluent.kafka.version>
+        <confluent.schema.version>7.6.0</confluent.schema.version>
     </properties>
 
     <dependencies>
@@ -45,7 +45,7 @@
             <version>1.11.3</version>
         </dependency>
 
-        <!--   confluent     -->
+        <!-- confluent -->
         <dependency>
             <groupId>io.confluent</groupId>
             <artifactId>kafka-avro-serializer</artifactId>
@@ -81,7 +81,7 @@
             <plugin>
                 <groupId>org.apache.avro</groupId>
                 <artifactId>avro-maven-plugin</artifactId>
-                <version>1.11.2</version>
+                <version>1.11.3</version>
                 <executions>
                     <execution>
                         <phase>generate-sources</phase>

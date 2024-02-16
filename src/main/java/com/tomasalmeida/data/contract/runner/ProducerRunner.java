@@ -3,9 +3,11 @@ package com.tomasalmeida.data.contract.runner;
 import com.tomasalmeida.data.contract.Contract;
 import com.tomasalmeida.data.contract.User;
 import com.tomasalmeida.data.contract.common.PropertiesLoader;
-import org.apache.kafka.common.errors.SerializationException;
+import io.confluent.kafka.serializers.KafkaAvroDeserializerConfig;
+import io.confluent.kafka.serializers.KafkaAvroSerializerConfig;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.kafka.common.errors.SerializationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,6 +19,7 @@ import static com.tomasalmeida.data.contract.common.PropertiesLoader.TOPIC_CONTR
 import static com.tomasalmeida.data.contract.common.PropertiesLoader.TOPIC_USERS;
 
 public class ProducerRunner extends Thread {
+
     private static final Logger LOGGER = LoggerFactory.getLogger(ProducerRunner.class);
 
     private final KafkaProducer<String, User> userProducer;
@@ -24,6 +27,9 @@ public class ProducerRunner extends Thread {
 
     public ProducerRunner() throws IOException {
         Properties properties = PropertiesLoader.load("client.properties");
+        properties.put(KafkaAvroSerializerConfig.AVRO_USE_LOGICAL_TYPE_CONVERTERS_CONFIG, true);
+        properties.put(KafkaAvroDeserializerConfig.SPECIFIC_AVRO_READER_CONFIG, false);
+        properties.put(KafkaAvroDeserializerConfig.AVRO_USE_LOGICAL_TYPE_CONVERTERS_CONFIG, true);
         userProducer = new KafkaProducer<>(properties);
         contractProducer = new KafkaProducer<>(properties);
     }
@@ -37,9 +43,9 @@ public class ProducerRunner extends Thread {
             produceUser("La", "Fontaine", "", 49);
             produceUser("Young", "Sheldon Cooper", "", 7);
             userProducer.close();
-            produceContract(1, "valid contract", LocalDate.of(2022, 02, 01),  LocalDate.of(2022, 12, 31));
-            produceContract(2, "expired contract", LocalDate.of(2022, 01, 01),  LocalDate.of(2021, 12, 31));
-            produceContract(3, "a", LocalDate.of(2022, 01, 01),  LocalDate.of(2022, 12, 31));
+            produceContract(1, "valid contract", LocalDate.of(2030, 12, 31));
+            produceContract(2, "expired contract", LocalDate.of(2021, 12, 31));
+            produceContract(3, "a", LocalDate.of(2122, 12, 31));
             contractProducer.close();
         } catch (Exception e) {
             LOGGER.error("Ops", e);
@@ -62,10 +68,9 @@ public class ProducerRunner extends Thread {
 
     }
 
-    private void produceContract(int id, String name, LocalDate creation, LocalDate expiration) throws InterruptedException {
-        Contract contract = null;
+    private void produceContract(int id, String name, LocalDate expiration) throws InterruptedException {
         try {
-            contract = new Contract (id, name, creation.toString(), expiration.toString());
+            Contract contract = new Contract(id, name, expiration.toString());
             LOGGER.info("Sending contract {}", contract);
             ProducerRecord<String, Contract> contractRecord = new ProducerRecord<>(TOPIC_CONTRACTS, contract);
             contractProducer.send(contractRecord);

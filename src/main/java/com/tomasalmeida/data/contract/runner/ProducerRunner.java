@@ -5,12 +5,9 @@ import com.tomasalmeida.data.contract.User;
 import com.tomasalmeida.data.contract.common.PropertiesLoader;
 import io.confluent.kafka.serializers.KafkaAvroDeserializerConfig;
 import io.confluent.kafka.serializers.KafkaAvroSerializerConfig;
-import org.apache.avro.Schema;
-import org.apache.avro.generic.GenericData;
-import org.apache.avro.generic.GenericRecord;
-import org.apache.kafka.common.errors.SerializationException;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.kafka.common.errors.SerializationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,9 +15,11 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.util.Properties;
 
+import static com.tomasalmeida.data.contract.common.PropertiesLoader.TOPIC_CONTRACTS;
+import static com.tomasalmeida.data.contract.common.PropertiesLoader.TOPIC_USERS;
+
 public class ProducerRunner extends Thread {
-    private static final String TOPIC_USERS = "crm.users";
-    private static final String TOPIC_CONTRACTS = "crm.contracts";
+
     private static final Logger LOGGER = LoggerFactory.getLogger(ProducerRunner.class);
 
     private final KafkaProducer<String, User> userProducer;
@@ -71,7 +70,7 @@ public class ProducerRunner extends Thread {
 
     private void produceContract(int id, String name, LocalDate expiration) throws InterruptedException {
         try {
-            Contract contract = new Contract (id, name, expiration.toString());
+            Contract contract = new Contract(id, name, expiration.toString());
             LOGGER.info("Sending contract {}", contract);
             ProducerRecord<String, Object> contractRecord = new ProducerRecord<>(TOPIC_CONTRACTS, contract);
             contractProducer.send(contractRecord);

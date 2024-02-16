@@ -9,6 +9,9 @@ import java.util.Properties;
 
 public class PropertiesLoader {
 
+    public static final String TOPIC_USERS = "crm.users";
+    public static final String TOPIC_CONTRACTS = "crm.contracts";
+
     private static final String CONFIG_PATH = "src/main/resources/%s";
 
     public static Properties load(final String fileName) throws IOException {

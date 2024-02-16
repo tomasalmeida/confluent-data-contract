@@ -48,7 +48,6 @@ Control center is available under http://localhost:9021
     curl http://localhost:8081/subjects/crm.contracts-value/versions \
       --header "Content-Type: application/json" --header "Accept: application/json" \
       --data @src/main/resources/schema/contract-ruleset.json | jq
-
 ```
 
 ## run producer

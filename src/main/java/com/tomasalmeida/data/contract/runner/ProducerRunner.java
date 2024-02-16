@@ -23,7 +23,7 @@ public class ProducerRunner extends Thread {
     private static final Logger LOGGER = LoggerFactory.getLogger(ProducerRunner.class);
 
     private final KafkaProducer<String, User> userProducer;
-    private final KafkaProducer<String, Object> contractProducer;
+    private final KafkaProducer<String, Contract> contractProducer;
 
     public ProducerRunner() throws IOException {
         Properties properties = PropertiesLoader.load("client.properties");
@@ -72,7 +72,7 @@ public class ProducerRunner extends Thread {
         try {
             Contract contract = new Contract(id, name, expiration.toString());
             LOGGER.info("Sending contract {}", contract);
-            ProducerRecord<String, Object> contractRecord = new ProducerRecord<>(TOPIC_CONTRACTS, contract);
+            ProducerRecord<String, Contract> contractRecord = new ProducerRecord<>(TOPIC_CONTRACTS, contract);
             contractProducer.send(contractRecord);
         } catch (SerializationException serializationException) {
             LOGGER.error("Unable to serialize contract: {}", serializationException.getCause().getMessage());

@@ -11,6 +11,7 @@ public class PropertiesLoader {
 
     public static final String TOPIC_USERS = "crm.users";
     public static final String TOPIC_CONTRACTS = "crm.contracts";
+    public static final String TOPIC_PRODUCTS = "warehouse.products";
 
     private static final String CONFIG_PATH = "src/main/resources/%s";
 

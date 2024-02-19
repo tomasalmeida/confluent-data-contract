@@ -1,4 +1,4 @@
-package com.tomasalmeida.data.contract.runner;
+package com.tomasalmeida.data.contract.readwrite;
 
 import com.tomasalmeida.data.contract.Contract;
 import com.tomasalmeida.data.contract.User;

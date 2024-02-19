@@ -1,0 +1,20 @@
+{
+  "ruleSet": {
+    "migrationRules": [
+      {
+        "name": "move_dimension_fields_to_object",
+        "kind": "TRANSFORM",
+        "type": "JSONATA",
+        "mode": "UPGRADE",
+        "expr": "$merge([$sift($, function($value, $key) {$key != 'weight' and $key != 'height' and $key != 'width'}), {'dimension': {'weight': weight,'height': height, 'width': width}}])"
+      },
+      {
+        "name": "flat_map_dimension_fields",
+        "kind": "TRANSFORM",
+        "type": "JSONATA",
+        "mode": "DOWNGRADE",
+        "expr": "$merge([$sift($, function($value, $key) {$key != 'dimension'}), {'weight': dimension.weight, 'height': dimension.height, 'width': dimension.width}])"
+      }
+    ]
+  }
+}

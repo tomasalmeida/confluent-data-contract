@@ -16,6 +16,12 @@ Control center is available under http://localhost:9021
 
 ## Read Write rules
 
+Move to this module
+
+```shell
+  cd readwrite-rules-app
+```
+
 ### Register a plain vanilla schema
 
 ```shell
@@ -57,14 +63,14 @@ Control center is available under http://localhost:9021
 
 ```shell
   mvn clean package
-  java -classpath target/data-contract-example-1.0.0-SNAPSHOT-jar-with-dependencies.jar com.tomasalmeida.data.contract.readwrite.ProducerRunner
+  java -classpath target/readwrite-rules-app-1.0.0-SNAPSHOT-jar-with-dependencies.jar com.tomasalmeida.data.contract.readwrite.ProducerRunner 
 ```
 
 ### run consumer
 
 ```shell
   mvn clean package
-  java -classpath target/data-contract-example-1.0.0-SNAPSHOT-jar-with-dependencies.jar com.tomasalmeida.data.contract.readwrite.ConsumerRunner
+  java -classpath target/readwrite-rules-app-1.0.0-SNAPSHOT-jar-with-dependencies.jar com.tomasalmeida.data.contract.readwrite.ConsumerRunner
 ```
 
 ### check DLQ
@@ -73,8 +79,8 @@ Control center is available under http://localhost:9021
   kafka-console-consumer --bootstrap-server localhost:29092 \
     --property schema.registry.url=http://localhost:8081 \
     --property print.timestamp=true \
-    --property print.offset=true \
-    --property print.partition=true \
+    --property print.offset=false \
+    --property print.partition=false \
     --property print.headers=true \
     --property print.key=true \
     --property print.value=true \
@@ -84,14 +90,16 @@ Control center is available under http://localhost:9021
 
 ## Migration rules
 
+Move to this module
+
 ### Register the v1 and v2 schemas
 
 ```shell
   # register v1 product
-  jq -n --rawfile schema src/main/resources/schema/product_v1.avsc '{schema: $schema, metadata: { properties: { app_version: 1 }}}' | \
+  jq -n --rawfile schema  migration-app-v1/src/main/resources/schema/product.avsc '{schema: $schema, metadata: { properties: { app_version: 1 }}}' | \
   curl --silent http://localhost:8081/subjects/warehouse.products-value/versions --json @- | jq
   # register v2 product
-  jq -n --rawfile schema src/main/resources/schema/product_v2.avsc '{schema: $schema, metadata: { properties: { app_version: 2 }}}' | \
+  jq -n --rawfile schema  migration-app-v2/src/main/resources/schema/product.avsc '{schema: $schema, metadata: { properties: { app_version: 2 }}}' | \
   curl --silent http://localhost:8081/subjects/warehouse.products-value/versions --json @- | jq
 ```
 
@@ -115,8 +123,15 @@ We try again
 
 ```shell
   # register v2 product
-  jq -n --rawfile schema src/main/resources/schema/product_v2.avsc '{schema: $schema, metadata: { properties: { app_version: 2 }}}' | \
+  jq -n --rawfile schema  migration-app-v2/src/main/resources/schema/product.avsc '{schema: $schema, metadata: { properties: { app_version: 2 }}}' | \
   curl --silent http://localhost:8081/subjects/warehouse.products-value/versions --json @- | jq
+```
+
+Register the rules
+
+```shell
+  curl http://localhost:8081/subjects/warehouse.products-value/versions \
+    --json @migration-app-v2/src/main/resources/schema/product-migration-rules.json | jq
 ```
 
 ### Producing data with version 1 and version 2 in parallel
@@ -133,19 +148,44 @@ We try again
   productProducerV2 = new KafkaProducer<>(properties);
 ```
 
-Now, we can run our producers:
+#### Running producer v1
+
 ```shell
   mvn clean package
-  java -classpath target/data-contract-example-1.0.0-SNAPSHOT-jar-with-dependencies.jar com.tomasalmeida.data.contract.migration.ProducerRunner
+  cd migration-app-v1
+  java -classpath target/migration-app-v1-1.0.0-SNAPSHOT-jar-with-dependencies.jar com.tomasalmeida.data.contract.migration.ProducerRunner
+  cd ..
 ```
+
+#### Running producer v2
+
+```shell
+  mvn clean package
+  cd migration-app-v2
+  java -classpath target/migration-app-v2-1.0.0-SNAPSHOT-jar-with-dependencies.jar com.tomasalmeida.data.contract.migration.ProducerRunner
+  cd ..
+```
+
 
 ### run consumers
 
+#### Running producer v1
+
 ```shell
   mvn clean package
-  java -classpath target/data-contract-example-1.0.0-SNAPSHOT-jar-with-dependencies.jar com.tomasalmeida.data.contract.migration.ConsumerRunner
+  cd migration-app-v1
+  java -classpath target/migration-app-v1-1.0.0-SNAPSHOT-jar-with-dependencies.jar com.tomasalmeida.data.contract.migration.ConsumerRunner
+  cd ..
 ```
 
+#### Running producer v2
+
+```shell
+  mvn clean package
+  cd migration-app-v2
+  java -classpath target/migration-app-v2-1.0.0-SNAPSHOT-jar-with-dependencies.jar com.tomasalmeida.data.contract.migration.ConsumerRunner
+  cd ..
+```
 
 # Shutdown
 
@@ -156,11 +196,15 @@ Now, we can run our producers:
 ```
 
 References:
-- https://github.com/mcascallares/confluent-data-contracts
-- https://github.com/rayokota/demo-data-contracts
-- https://yokota.blog/2023/10/01/understanding-cel-in-data-contract-rules/
-- https://www.confluent.io/en-gb/blog/data-contracts-confluent-schema-registry/
-- https://docs.confluent.io/cloud/current/sr/fundamentals/data-contracts.html
+- Code
+  - https://github.com/mcascallares/confluent-data-contracts
+  - https://github.com/rayokota/demo-data-contracts
+  - https://github.com/randomravings/confluent-data-contracts
+  - https://github.com/gphilipp/migration-rules-demo
+- Docs and Blogs: 
+  - https://yokota.blog/2023/10/01/understanding-cel-in-data-contract-rules/
+  - https://www.confluent.io/en-gb/blog/data-contracts-confluent-schema-registry/
+  - https://docs.confluent.io/cloud/current/sr/fundamentals/data-contracts.html
 - Basics:
   - https://docs.confluent.io/platform/current/installation/configuration/consumer-configs.html
   - https://docs.confluent.io/platform/current/installation/configuration/producer-configs.html

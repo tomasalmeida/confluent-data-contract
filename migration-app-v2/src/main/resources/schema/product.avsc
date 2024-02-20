@@ -1,6 +1,6 @@
 {
   "name": "Product",
-  "namespace": "com.tomasalmeida.data.contract.v2",
+  "namespace": "com.tomasalmeida.data.contract",
   "type": "record",
   "fields": [
     {

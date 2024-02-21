@@ -98,9 +98,16 @@ Check the DLQ topic to see the events that were not accepted by the rules and th
 
 ## DEMO 2: Migration rules
 
-Move to this module
+Create the resources
 
-docker-compose exec broker1 kafka-topics --bootstrap-server broker1:9092 --create --topic warehouse.products
+```shell
+    cd env
+    docker-compose exec broker1 kafka-topics --bootstrap-server broker1:9092 --create --topic warehouse.products
+    cd ..
+    mvn clean package
+```
+
+
 
 
 
@@ -160,46 +167,41 @@ Register the rules
   productProducerV2 = new KafkaProducer<>(properties);
 ```
 
-#### Running producer v1
+#### Running producer v1 (exclusive shell)
 
 ```shell
-  mvn clean package
   cd migration-app-v1
   java -classpath target/migration-app-v1-1.0.0-SNAPSHOT-jar-with-dependencies.jar com.tomasalmeida.data.contract.migration.ProducerRunner
-  cd ..
 ```
 
-#### Running producer v2
+#### Running producer v2 (exclusive shell)
 
 ```shell
-  mvn clean package
   cd migration-app-v2
   java -classpath target/migration-app-v2-1.0.0-SNAPSHOT-jar-with-dependencies.jar com.tomasalmeida.data.contract.migration.ProducerRunner
-  cd ..
 ```
 
 
 ### run consumers
 
-#### Running producer v1
+#### Running producer v1 (exclusive shell)
 
 ```shell
-  mvn clean package
   cd migration-app-v1
   java -classpath target/migration-app-v1-1.0.0-SNAPSHOT-jar-with-dependencies.jar com.tomasalmeida.data.contract.migration.ConsumerRunner
-  cd ..
 ```
 
-#### Running producer v2
+#### Running producer v2 (exclusive shell)  
 
 ```shell
-  mvn clean package
   cd migration-app-v2
   java -classpath target/migration-app-v2-1.0.0-SNAPSHOT-jar-with-dependencies.jar com.tomasalmeida.data.contract.migration.ConsumerRunner
-  cd ..
 ```
 
 # Shutdown
+
+1. Stop the consumers and producers
+2. Stop the environment
 
 ```shell
     cd env

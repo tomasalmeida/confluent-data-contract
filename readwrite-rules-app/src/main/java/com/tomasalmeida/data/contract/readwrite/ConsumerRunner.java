@@ -69,18 +69,17 @@ public class ConsumerRunner {
     }
 
     private void closeContractConsumer() {
-        contractConsumer.wakeup();
-        try {
-            constractConsumerThread.join(3000);
-        } catch (InterruptedException e) {
-            LOGGER.error("Oh man...", e);
-        }
+        closeConsumerAndThread(contractConsumer, constractConsumerThread);
     }
 
     private void closeUserConsumer() {
-        userConsumer.wakeup();
+        closeConsumerAndThread(userConsumer, userConsumerThread);
+    }
+
+    private <T> void closeConsumerAndThread(KafkaConsumer<String, T> consumer, Thread thread) {
+        consumer.wakeup();
         try {
-            userConsumerThread.join(3000);
+            thread.join(3000);
         } catch (InterruptedException e) {
             LOGGER.error("Oh man...", e);
         }

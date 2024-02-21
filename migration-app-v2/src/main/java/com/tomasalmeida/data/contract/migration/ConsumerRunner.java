@@ -3,10 +3,10 @@ package com.tomasalmeida.data.contract.migration;
 import com.tomasalmeida.data.contract.Product;
 import com.tomasalmeida.data.contract.common.PropertiesLoader;
 import io.confluent.kafka.serializers.KafkaAvroDeserializerConfig;
-import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.apache.kafka.common.errors.WakeupException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,15 +20,16 @@ import static com.tomasalmeida.data.contract.common.PropertiesLoader.TOPIC_PRODU
 public class ConsumerRunner {
     public static final Logger LOGGER = LoggerFactory.getLogger(ConsumerRunner.class);
 
-    private final Properties properties;
+    private final KafkaConsumer<String, Product> consumer;
 
     public ConsumerRunner() throws IOException {
-        properties = PropertiesLoader.load("client.properties");
+        Properties properties = PropertiesLoader.load("client.properties");
         properties.put(KafkaAvroDeserializerConfig.USE_LATEST_WITH_METADATA, "app_version=2");
+        consumer = new KafkaConsumer<>(properties);
     }
 
     public void runProductConsumerV2() {
-        try (Consumer<String, Product> consumer = new KafkaConsumer<>(properties)) {
+        try (consumer) {
             consumer.subscribe(Collections.singletonList(TOPIC_PRODUCTS));
             LOGGER.info("Starting Product consumer V2...");
             while (true) {
@@ -37,13 +38,35 @@ public class ConsumerRunner {
                     LOGGER.info("Product with V2 schema: {}", record.value());
                 }
             }
+        } catch (WakeupException e) {
+            // ignore for shutdown
         } catch (Exception e) {
             LOGGER.error("Error in User Consumer v1", e);
         }
     }
 
+    private void wakeUp() {
+        consumer.wakeup();
+    }
+
     public static void main(final String[] args) throws IOException {
         ConsumerRunner consumerRunner = new ConsumerRunner();
+
+        // get a reference to the current thread
+        final Thread mainThread = Thread.currentThread();
+
+        // Adding a shutdown hook to clean up when the application exits
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            consumerRunner.wakeUp();
+
+            // join the main thread to give time to consumer to close correctly
+            try {
+                mainThread.join();
+            } catch (InterruptedException e) {
+                LOGGER.error("Oh man...", e);
+            }
+        }));
+
         consumerRunner.runProductConsumerV2();
    }
 }

@@ -29,7 +29,9 @@ public class ProducerRunner {
         Properties properties = PropertiesLoader.load("client.properties");
         properties.put(KafkaAvroSerializerConfig.AVRO_USE_LOGICAL_TYPE_CONVERTERS_CONFIG, true);
         properties.put(KafkaAvroDeserializerConfig.SPECIFIC_AVRO_READER_CONFIG, false);
+        properties.put("clientId", "user-producer");
         userProducer = new KafkaProducer<>(properties);
+        properties.put("clientId", "contract-producer");
         contractProducer = new KafkaProducer<>(properties);
     }
 

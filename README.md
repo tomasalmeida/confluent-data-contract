@@ -5,24 +5,28 @@
 ```shell
     cd env
     docker-compose up -d
-    docker-compose exec broker1 kafka-topics --bootstrap-server broker1:9092 --create --topic crm.users
-    docker-compose exec broker1 kafka-topics --bootstrap-server broker1:9092 --create --topic crm.contracts 
-    docker-compose exec broker1 kafka-topics --bootstrap-server broker1:9092 --create --topic crm.generic-dlq
-    docker-compose exec broker1 kafka-topics --bootstrap-server broker1:9092 --create --topic warehouse.products
     cd ..
 ```
 
 Control center is available under http://localhost:9021
 
-## Read Write rules
+## DEMO 1: Read Write rules (validation and transformation)
 
-Move to this module
+Creating the needed topics and compiling the project
 
 ```shell
+  # create topics
+  cd env/
+  docker-compose exec broker1 kafka-topics --bootstrap-server broker1:9092 --create --topic crm.users
+  docker-compose exec broker1 kafka-topics --bootstrap-server broker1:9092 --create --topic crm.contracts 
+  docker-compose exec broker1 kafka-topics --bootstrap-server broker1:9092 --create --topic crm.generic-dlq
+  cd ..
+  # compile the project and move to the app folder
+  mvn clean package
   cd readwrite-rules-app
 ```
 
-### Register a plain vanilla schema
+### Register plain vanilla schemas
 
 ```shell
   # user subject
@@ -59,21 +63,25 @@ Move to this module
       --data @src/main/resources/schema/contract-ruleset.json | jq
 ```
 
-### run producer
+### Run producer 
+
+Check events being created or refused due to the condition rules.
 
 ```shell
-  mvn clean package
   java -classpath target/readwrite-rules-app-1.0.0-SNAPSHOT-jar-with-dependencies.jar com.tomasalmeida.data.contract.readwrite.ProducerRunner 
 ```
 
-### run consumer
+### Run consumer
+
+Check events being consumed and transformed during consumption.
 
 ```shell
-  mvn clean package
   java -classpath target/readwrite-rules-app-1.0.0-SNAPSHOT-jar-with-dependencies.jar com.tomasalmeida.data.contract.readwrite.ConsumerRunner
 ```
 
 ### check DLQ
+
+Check the DLQ topic to see the events that were not accepted by the rules and their headers.
 
 ```shell
   kafka-console-consumer --bootstrap-server localhost:29092 \
@@ -88,9 +96,13 @@ Move to this module
     --from-beginning
 ```
 
-## Migration rules
+## DEMO 2: Migration rules
 
 Move to this module
+
+docker-compose exec broker1 kafka-topics --bootstrap-server broker1:9092 --create --topic warehouse.products
+
+
 
 ### Register the v1 and v2 schemas
 

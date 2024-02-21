@@ -1,4 +1,4 @@
-package com.tomasalmeida.data.contract.runner;
+package com.tomasalmeida.data.contract.readwrite;
 
 import com.tomasalmeida.data.contract.Contract;
 import com.tomasalmeida.data.contract.User;
@@ -18,7 +18,7 @@ import java.util.Properties;
 import static com.tomasalmeida.data.contract.common.PropertiesLoader.TOPIC_CONTRACTS;
 import static com.tomasalmeida.data.contract.common.PropertiesLoader.TOPIC_USERS;
 
-public class ProducerRunner extends Thread {
+public class ProducerRunner {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ProducerRunner.class);
 
@@ -29,13 +29,13 @@ public class ProducerRunner extends Thread {
         Properties properties = PropertiesLoader.load("client.properties");
         properties.put(KafkaAvroSerializerConfig.AVRO_USE_LOGICAL_TYPE_CONVERTERS_CONFIG, true);
         properties.put(KafkaAvroDeserializerConfig.SPECIFIC_AVRO_READER_CONFIG, false);
-        properties.put(KafkaAvroDeserializerConfig.AVRO_USE_LOGICAL_TYPE_CONVERTERS_CONFIG, true);
+        properties.put("clientId", "user-producer");
         userProducer = new KafkaProducer<>(properties);
+        properties.put("clientId", "contract-producer");
         contractProducer = new KafkaProducer<>(properties);
     }
 
-    @Override
-    public void run() {
+    public void createEvents() {
         try {
             produceUser("Tomas", "Dias Almeida", "Tomas Almeida", 39);
             produceUser("Fernando", "Perez Machado", "", 53);
@@ -54,9 +54,8 @@ public class ProducerRunner extends Thread {
     }
 
     private void produceUser(String firstName, String lastName, String fullName, int age) throws InterruptedException {
-        User user = null;
         try {
-            user = new User(firstName, lastName, fullName, age);
+            User user = new User(firstName, lastName, fullName, age);
             LOGGER.info("Sending user {}", user);
             ProducerRecord<String, User> userRecord = new ProducerRecord<>(TOPIC_USERS, user);
             userProducer.send(userRecord);
@@ -84,6 +83,6 @@ public class ProducerRunner extends Thread {
 
     public static void main(final String[] args) throws IOException {
         ProducerRunner producerRunner = new ProducerRunner();
-        producerRunner.run();
+        producerRunner.createEvents();
     }
 }

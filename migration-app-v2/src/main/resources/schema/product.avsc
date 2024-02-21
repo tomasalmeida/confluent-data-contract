@@ -1,0 +1,36 @@
+{
+  "name": "Product",
+  "namespace": "com.tomasalmeida.data.contract",
+  "type": "record",
+  "fields": [
+    {
+      "name": "name",
+      "type": "string"
+    },
+    {
+      "name": "category",
+      "type": "string"
+    },
+    {
+      "name": "dimension",
+      "type": {
+        "name": "Dimension",
+        "type": "record",
+        "fields": [
+          {
+            "name": "weight",
+            "type": "int"
+          },
+          {
+            "name": "height",
+            "type": "int"
+          },
+          {
+            "name": "width",
+            "type": "int"
+          }
+        ]
+      }
+    }
+  ]
+}

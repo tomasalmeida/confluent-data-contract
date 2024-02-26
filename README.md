@@ -198,7 +198,63 @@ Register the rules
   java -classpath target/migration-app-v2-1.0.0-SNAPSHOT-jar-with-dependencies.jar com.tomasalmeida.data.contract.migration.ConsumerRunner
 ```
 
-# Shutdown
+## DEMO 3: Data Contract Global Rules
+
+Creating the needed topics and compiling the project
+
+```shell
+  # create topics
+  cd env/
+  docker-compose exec broker1 kafka-topics --bootstrap-server broker1:9092 --create --topic data.clients
+  docker-compose exec broker1 kafka-topics --bootstrap-server broker1:9092 --create --topic data.orders 
+  docker-compose exec broker1 kafka-topics --bootstrap-server broker1:9092 --create --topic data.products
+  docker-compose exec broker1 kafka-topics --bootstrap-server broker1:9092 --create --topic data.stockitems  
+  docker-compose exec broker1 kafka-topics --bootstrap-server broker1:9092 --create --topic data.dlq.invalid.clients
+  docker-compose exec broker1 kafka-topics --bootstrap-server broker1:9092 --create --topic data.dlq.invalid.products
+  cd ..
+  # compile the project and move to the app folder
+  mvn clean package
+  cd global-rules-app
+```
+
+### Enhancing the schemas with the global rule
+
+This step needs to be done before creating the 
+
+```shell
+  curl -s http://localhost:8081/config \
+  -X PUT \
+  --header "Content-Type: application/json" \
+  --data @src/main/resources/schema/global-ruleset.json | jq
+```
+
+### Register plain vanilla schemas
+
+```shell
+  # client subject
+  jq -n --rawfile schema src/main/resources/schema/client.avsc '{schema: $schema}' | \
+  curl --silent http://localhost:8081/subjects/data.clients-value/versions --json @- | jq
+  # orders subject
+  jq -n --rawfile schema src/main/resources/schema/order.avsc '{schema: $schema}' | \
+  curl --silent http://localhost:8081/subjects/data.orders-value/versions --json @- | jq
+  # products subject
+  jq -n --rawfile schema src/main/resources/schema/product.avsc '{schema: $schema}' | \
+  curl --silent http://localhost:8081/subjects/data.products-value/versions --json @- | jq
+  # stockitems subject
+  jq -n --rawfile schema src/main/resources/schema/stockItem.avsc '{schema: $schema}' | \
+  curl --silent http://localhost:8081/subjects/data.stockitems-value/versions --json @- | jq
+```
+
+### Testing the rules
+
+```shell
+## run Client producer
+java -classpath target/global-rules-app-1.0.0-SNAPSHOT-jar-with-dependencies.jar com.tomasalmeida.data.contract.globalrules.ClientProducerRunner
+```
+defaultRuleSet - Default value for the ruleSet to be used during schema registration.
+overrideRuleSet - Override value for the ruleSet to be used during schema registration.
+
+## Shutdown
 
 1. Stop the consumers and producers
 2. Stop the environment

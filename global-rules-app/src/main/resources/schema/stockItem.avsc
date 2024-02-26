@@ -1,0 +1,16 @@
+{
+  "name": "StockItem",
+  "namespace": "com.tomasalmeida.data.contract",
+  "type": "record",
+  "fields": [
+    {
+      "name": "productId",
+      "type": "string",
+      "confluent:tags": [ "PRODUCTID"]
+    },
+    {
+      "name": "quantity",
+      "type": "int"
+    }
+  ]
+}

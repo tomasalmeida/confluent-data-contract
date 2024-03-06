@@ -1,5 +1,5 @@
 {
-  "overrideRuleSet": {
+  "defaultRuleSet": {
     "domainRules": [
       {
         "name": "ProductIdValidation",
@@ -8,7 +8,7 @@
         "tags": [
           "PRODUCTID"
         ],
-        "type": "CEL_FIELD",
+        "type": "CEL",
         "doc": "Product Id is composed by 3 capital letters, a dash and 6 numbers",
         "expr": "typeName == 'STRING'; value.match(r'^[A-Z]{3}-[0-9]{6}$')",
         "onFailure": "DLQ",
@@ -23,21 +23,25 @@
         "tags": [
           "CLIENTID"
         ],
-        "type": "CEL_FIELD",
+        "type": "CEL",
         "doc": "Client Id is composed by 'u-' and five lowercase characters or numbers",
-        "expr": "typeName == 'STRING'; value.matches(r'^u-[a-z0-9]{5}$')",
+        "expr": "value.matches(r'^u-[a-z0-9]{5}$')",
         "onFailure": "DLQ",
         "params": {
-          "dlq.topic": "data.dlq.invalid.clients-id"
+          "dlq.topic": "data.dlq.invalid.clients"
         }
-      },
+      }
+    ]
+  },
+  "overrideRuleSet": {
+    "domainRules": [
       {
         "name": "countryValidation",
         "kind": "CONDITION",
         "mode": "WRITE",
         "doc": "Country is a 2 capital letters string",
         "type": "CEL",
-        "expr": "has(message.countryCode); message.countryCode.matches(r'^[A-Z]{2}$')",
+        "expr": "has(message.countryCode); message.countryCode.matches(r'^[a-zA-Z]{2}$')",
         "onFailure": "ERROR"
       }
     ]

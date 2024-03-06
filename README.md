@@ -217,7 +217,7 @@ Creating the needed topics and compiling the project
   cd global-rules-app
 ```
 
-### Enhancing the schemas with the global rule
+### Enhancing the schemas with the global rule defaultRuleset
 
 This step needs to be done before creating the 
 
@@ -225,10 +225,27 @@ This step needs to be done before creating the
   curl -s http://localhost:8081/config \
   -X PUT \
   --header "Content-Type: application/json" \
-  --data @src/main/resources/schema/global-ruleset.json | jq
+  --data @src/main/resources/schema/global-ruleset_v1.json | jq
 ```
 
-### Register plain vanilla schemas
+### Register 1 plain vanilla schemas
+
+```shell
+  # client subject
+  jq -n --rawfile schema src/main/resources/schema/client.avsc '{schema: $schema}' | \
+  curl --silent http://localhost:8081/subjects/data.clients-value/versions --json @- | jq
+```  
+
+### Update rules with overrideRuleSet
+
+```shell
+  curl -s http://localhost:8081/config \
+  -X PUT \
+  --header "Content-Type: application/json" \
+  --data @src/main/resources/schema/global-ruleset_v2.json | jq
+```
+
+### Register / update  plain vanilla schemas
 
 ```shell
   # client subject

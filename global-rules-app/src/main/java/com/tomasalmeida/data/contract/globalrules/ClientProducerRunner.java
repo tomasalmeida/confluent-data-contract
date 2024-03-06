@@ -33,17 +33,16 @@ public class ClientProducerRunner {
             produceClient("u-12345", "Jane", "Doe", "UK");
             produceClient("u-a1b2c", "Joe", "Smith", "CA");
             //invalid user id
-            produceClient("12345", "Pierre", "Dupont", "FR");
-            produceClient("abcde", "Marie", "Dupont", "FR");
-            produceClient("a1b2c", "Ludovic", "Dupont", "FR");
-            produceClient("u-123", "Sebastien", "Dupont", "FR");
-            produceClient("u-abc", "Severine", "Dupont", "FR");
-            produceClient("u-a1b", "Audrey", "Dupont", "FR");
-            produceClient("u-ABCDE", "Jean", "Dupont", "FR");
+            produceClient("12345", "Pierre", "Dupont", "fr");
+            produceClient("abcde", "Marie", "Dupont", "fr");
+            produceClient("a1b2c", "Ludovic", "Dupont", "fr");
+            produceClient("u-123", "Sebastien", "Dupont", "fr");
+            produceClient("u-abc", "Severine", "Dupont", "fr");
+            produceClient("u-a1b", "Audrey", "Dupont", "fr");
+            produceClient("u-ABCDE", "Jean", "Dupont", "fr");
             //invalid country code
             produceClient("u-45678", "Antonio", "Garcia", "");
             produceClient("u-fghij", "Maria", "Garcia", "E");
-            produceClient("u-f4g5h", "Manuel", "Garcia", "es");
         } catch (Exception e) {
             LOGGER.error("Ops", e);
         }
@@ -59,7 +58,7 @@ public class ClientProducerRunner {
             LOGGER.error("Exception with client [{}]", client, exception);
         }
         LOGGER.info("================");
-        Thread.sleep(1000);
+        Thread.sleep(3000);
     }
 
     private void close() {

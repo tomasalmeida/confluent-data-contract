@@ -30,8 +30,8 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>17</java.version>
         <slf4j-api.version>1.7.36</slf4j-api.version>
-        <confluent.kafka.version>7.6.1-ce</confluent.kafka.version>
-        <confluent.schema.version>7.6.1</confluent.schema.version>
+        <confluent.kafka.version>7.6.0-ce</confluent.kafka.version>
+        <confluent.schema.version>7.6.0</confluent.schema.version>
     </properties>
 
     <dependencies>

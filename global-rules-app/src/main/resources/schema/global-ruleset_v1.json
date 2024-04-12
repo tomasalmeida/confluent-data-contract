@@ -1,0 +1,45 @@
+{
+  "defaultRuleSet": {
+    "domainRules": [
+      {
+        "name": "ProductIdValidation",
+        "kind": "CONDITION",
+        "mode": "WRITE",
+        "tags": [
+          "PRODUCTID"
+        ],
+        "type": "CEL_FIELD",
+        "doc": "Product Id is composed by 3 capital letters, a dash and 6 numbers",
+        "expr": "typeName == 'STRING'; value.match(r'^[A-Z]{3}-[0-9]{6}$')",
+        "onFailure": "DLQ",
+        "params": {
+          "dlq.topic": "data.dlq.invalid.products"
+        }
+      },
+      {
+        "name": "clientIdValidation",
+        "kind": "CONDITION",
+        "mode": "WRITE",
+        "tags": [
+          "CLIENTID"
+        ],
+        "type": "CEL_FIELD",
+        "doc": "Client Id is composed by 'u-' and five lowercase characters or numbers",
+        "expr": "typeName == 'STRING'; value.matches(r'^u-[a-z0-9]{5}$')",
+        "onFailure": "DLQ",
+        "params": {
+          "dlq.topic": "data.dlq.invalid.clients"
+        }
+      },
+      {
+        "name": "countryValidation",
+        "kind": "CONDITION",
+        "mode": "WRITE",
+        "doc": "Country is a 2 capital letters string",
+        "type": "CEL",
+        "expr": "has(message.countryCode); message.countryCode.matches(r'^[A-Z]{2}$')",
+        "onFailure": "ERROR"
+      }
+    ]
+  }
+}

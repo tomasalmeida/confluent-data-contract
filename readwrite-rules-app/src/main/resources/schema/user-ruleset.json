@@ -6,7 +6,7 @@
         "kind": "CONDITION",
         "type": "CEL",
         "mode": "WRITE",
-        "expr": "size(message.firstName) > 3",
+        "expr": "size(message.firstName) > 2",
         "onFailure": "DLQ",
         "params": {
           "dlq.topic": "crm.generic-dlq",
@@ -19,7 +19,7 @@
         "kind": "CONDITION",
         "type": "CEL",
         "mode": "WRITE",
-        "expr": "size(message.lastName) > 3",
+        "expr": "size(message.lastName) > 2",
         "onFailure": "DLQ",
         "params": {
           "dlq.topic": "crm.generic-dlq",

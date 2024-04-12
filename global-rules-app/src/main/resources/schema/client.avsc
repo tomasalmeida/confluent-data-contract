@@ -1,0 +1,25 @@
+{
+  "name": "Client",
+  "namespace": "com.tomasalmeida.data.contract",
+  "type": "record",
+  "doc": "Client data",
+  "fields": [
+    {
+      "name": "id",
+      "type": "string",
+      "confluent:tags": [ "CLIENTID"]
+    },
+    {
+      "name": "firstName",
+      "type": "string"
+    },
+    {
+      "name": "LastName",
+      "type": "string"
+    },
+    {
+      "name": "countryCode",
+      "type": "string"
+    }
+  ]
+}

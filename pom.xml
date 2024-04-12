@@ -12,6 +12,7 @@
         <module>migration-app-v1</module>
         <module>migration-app-v2</module>
         <module>readwrite-rules-app</module>
+        <module>global-rules-app</module>
     </modules>
 
     <repositories>

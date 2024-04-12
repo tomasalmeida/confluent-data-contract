@@ -43,10 +43,15 @@ public class ProducerRunner {
             produceUser("La", "Fontaine", "", 49);
             produceUser("Young", "Sheldon Cooper", "", 7);
             userProducer.close();
+            LOGGER.info("Press any key to continue");
+            System.in.read();
+
             produceContract(1, "valid contract", LocalDate.of(2030, 12, 31));
             produceContract(2, "expired contract", LocalDate.of(2021, 12, 31));
             produceContract(3, "a", LocalDate.of(2122, 12, 31));
             contractProducer.close();
+            LOGGER.info("Press any key to continue");
+            System.in.read();
         } catch (Exception e) {
             LOGGER.error("Ops", e);
         }

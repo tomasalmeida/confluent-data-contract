@@ -1,18 +1,29 @@
 # Confluent Data Contract
 
-## Start the environment
+## Pre-requisites
+
+Have the following tools installed:
+- Docker
+- Docker Compose
+- Maven
+- Java 17
+- jq
+
+## Start the environment and compile the code
 
 ```shell
     cd env
     docker-compose up -d
     cd ..
+    # compile the project and move to the app folder
+    mvn clean package
 ```
 
 Control center is available under http://localhost:9021
 
 ## DEMO 1: Read Write rules (validation and transformation)
 
-Creating the needed topics and compiling the project
+Creating the needed topics:
 
 ```shell
   # create topics
@@ -21,8 +32,6 @@ Creating the needed topics and compiling the project
   docker-compose exec broker1 kafka-topics --bootstrap-server broker1:9092 --create --topic crm.contracts 
   docker-compose exec broker1 kafka-topics --bootstrap-server broker1:9092 --create --topic crm.generic-dlq
   cd ..
-  # compile the project and move to the app folder
-  mvn clean package
   cd readwrite-rules-app
 ```
 
@@ -36,6 +45,9 @@ Creating the needed topics and compiling the project
   jq -n --rawfile schema src/main/resources/schema/contract.avsc '{schema: $schema}' | \
   curl --silent http://localhost:8081/subjects/crm.contracts-value/versions --json @- | jq
 ```
+> [!NOTE]
+> * We have created two schemas, one for users and one for contracts. 
+> * They are plain vanilla schemas, with no metadata or rules.
 
 ### Enhancing the data contract with metadata
 
@@ -50,6 +62,11 @@ Creating the needed topics and compiling the project
       --data "@src/main/resources/schema/contract-metadata.json" | jq
 ```
 
+> [!NOTE]
+> * We have added metadata to the schemas, indicating if they are GDPR sensitive, the owner and owner e-mail of these subjects.
+> * As you can see the metadata is not validated, it is just stored in the schema registry.
+> * Another important point is the id is increased by one, indicating a new version of the subject.
+
 ### Adding data quality rules to the data contract
 
 ```shell
@@ -63,6 +80,12 @@ Creating the needed topics and compiling the project
       --data @src/main/resources/schema/contract-ruleset.json | jq
 ```
 
+> [!NOTE]
+> * We have added rules to the schemas, indicating, for example:
+>   * The user schema has a rule that the user must be older than 18 years old
+>   * The contract schema has a rule that the contract must have a valid date.
+> * As before, the id is increased by one, indicating a new version of the subject.
+
 ### Run producer 
 
 Check events being created or refused due to the condition rules.
@@ -70,6 +93,10 @@ Check events being created or refused due to the condition rules.
 ```shell
   java -classpath target/readwrite-rules-app-1.0.0-SNAPSHOT-jar-with-dependencies.jar com.tomasalmeida.data.contract.readwrite.ProducerRunner 
 ```
+> [!TIP]
+> * Check the logs to see the events being produced and the ones that were not accepted by the rules.
+> * The producer produces 8 events, 3 of them will be accepted and 5 will be refused.
+>   * In some cases, the refused events will be sent to the DLQ topic (check the rules to see which ones).
 
 ### Run consumer
 
@@ -79,6 +106,9 @@ Check events being consumed and transformed during consumption.
   java -classpath target/readwrite-rules-app-1.0.0-SNAPSHOT-jar-with-dependencies.jar com.tomasalmeida.data.contract.readwrite.ConsumerRunner
 ```
 
+> [!IMPORTANT]
+> One of the users is transformed during consumption. The fullName is created by concatenating the firstName and lastName.
+
 ### check DLQ
 
 Check the DLQ topic to see the events that were not accepted by the rules and their headers.
@@ -86,7 +116,7 @@ Check the DLQ topic to see the events that were not accepted by the rules and th
 ```shell
   kafka-console-consumer --bootstrap-server localhost:29092 \
     --property schema.registry.url=http://localhost:8081 \
-    --property print.timestamp=true \
+    --property print.timestamp=false \
     --property print.offset=false \
     --property print.partition=false \
     --property print.headers=true \
@@ -95,6 +125,8 @@ Check the DLQ topic to see the events that were not accepted by the rules and th
     --topic crm.generic-dlq \
     --from-beginning
 ```
+
+
 
 ## DEMO 2: Migration rules
 
@@ -257,10 +289,9 @@ This step needs to be done before creating the
   # products subject
   jq -n --rawfile schema src/main/resources/schema/product.avsc '{schema: $schema}' | \
   curl --silent http://localhost:8081/subjects/data.products-value/versions --json @- | jq
-  # stockitems subject
-  jq -n --rawfile schema src/main/resources/schema/stockItem.avsc '{schema: $schema}' | \
-  curl --silent http://localhost:8081/subjects/data.stockitems-value/versions --json @- | jq
 ```
+
+All the schemas are registered with the defaultRuleSet and overrideRuleSet.
 
 ### Testing the rules
 
@@ -268,8 +299,6 @@ This step needs to be done before creating the
 ## run Client producer
 java -classpath target/global-rules-app-1.0.0-SNAPSHOT-jar-with-dependencies.jar com.tomasalmeida.data.contract.globalrules.ClientProducerRunner
 ```
-defaultRuleSet - Default value for the ruleSet to be used during schema registration.
-overrideRuleSet - Override value for the ruleSet to be used during schema registration.
 
 ## Shutdown
 

@@ -8,9 +8,9 @@
         "tags": [
           "PRODUCTID"
         ],
-        "type": "CEL",
+        "type": "CEL_FIELD",
         "doc": "Product Id is composed by 3 capital letters, a dash and 6 numbers",
-        "expr": "typeName == 'STRING'; value.match(r'^[A-Z]{3}-[0-9]{6}$')",
+        "expr": "typeName == 'STRING'; value.matches(r'^[A-Z]{3}-[0-9]{6}$')",
         "onFailure": "DLQ",
         "params": {
           "dlq.topic": "data.dlq.invalid.products"
@@ -23,9 +23,9 @@
         "tags": [
           "CLIENTID"
         ],
-        "type": "CEL",
+        "type": "CEL_FIELD",
         "doc": "Client Id is composed by 'u-' and five lowercase characters or numbers",
-        "expr": "value.matches(r'^u-[a-z0-9]{5}$')",
+        "expr": "typeName == 'STRING'; value.matches(r'^u-[a-z0-9]{5}$')",
         "onFailure": "DLQ",
         "params": {
           "dlq.topic": "data.dlq.invalid.clients"

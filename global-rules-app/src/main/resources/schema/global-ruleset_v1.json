@@ -10,7 +10,7 @@
         ],
         "type": "CEL_FIELD",
         "doc": "Product Id is composed by 3 capital letters, a dash and 6 numbers",
-        "expr": "typeName == 'STRING'; value.match(r'^[A-Z]{3}-[0-9]{6}$')",
+        "expr": "typeName == 'STRING'; value.matches(r'^[a-zA-Z]{3}-[0-9]{6}$')",
         "onFailure": "DLQ",
         "params": {
           "dlq.topic": "data.dlq.invalid.products"

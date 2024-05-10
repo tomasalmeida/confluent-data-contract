@@ -296,7 +296,10 @@ This step needs to be done before creating the schemas
 ```
 
 > [!IMPORTANT]
-> * The overrideRuleSet is used to override the defaultRuleSet.
+> * The overrideRuleSet, defaultRuleSet and the rules a schema have an order of precedence defined in [Configuration enhancements](https://docs.confluent.io/platform/7.6/schema-registry/fundamentals/data-contracts.html#configuration-enhancements).
+>   * first, taking the default value
+>   * then, merging the metadata from the schema on top of it
+>   * finally, merging the override value for the final result
 > * Created schemas are not affected by the overrideRuleSet, only the new ones.
 
 ### Register / update  plain vanilla schemas

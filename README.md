@@ -120,7 +120,7 @@ Check the DLQ topic to see the events that were not accepted by the rules and th
     --property print.offset=false \
     --property print.partition=false \
     --property print.headers=true \
-    --property print.key=true \
+    --property print.key=false \
     --property print.value=true \
     --topic crm.generic-dlq \
     --from-beginning
@@ -245,7 +245,7 @@ It should work now and we have a new schema version.
 
 ```shell
   cd migration-app-v1
-  java -classpath target/migration-app-v1-1.0.0-SNAPSHOT-jar-with-dependencies.jar com.tomasalmeida.data.contract.migration.ConsumerRunner
+  java -classpath target/migration-app-v2-1.0.0-SNAPSHOT-jar-with-dependencies.jar com.tomasalmeida.data.contract.migration.ConsumerRunner
 ```
 
 > [!IMPORTANT]
@@ -341,7 +341,7 @@ Finally, let's check the DLQ topics. Note that CountryCode rule does not send da
     --property print.offset=false \
     --property print.partition=false \
     --property print.headers=true \
-    --property print.key=true \
+    --property print.key=false \
     --property print.value=true \
     --topic data.dlq.invalid.clients \
     --from-beginning
@@ -354,7 +354,7 @@ Finally, let's check the DLQ topics. Note that CountryCode rule does not send da
       --property print.offset=false \
       --property print.partition=false \
       --property print.headers=true \
-      --property print.key=true \
+      --property print.key=false \
       --property print.value=true \
       --topic data.dlq.invalid.products \
       --from-beginning
@@ -367,7 +367,7 @@ Finally, let's check the DLQ topics. Note that CountryCode rule does not send da
 
 ```shell
     cd env
-    docker-compose down -v
+    docker-compose down -v && docker system prune -f
     cd ..
 ```
 

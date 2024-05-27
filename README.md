@@ -371,7 +371,7 @@ Finally, let's check the DLQ topics. Note that CountryCode rule does not send da
     cd ..
 ```
 
-References:
+## References:
 - Code
   - https://github.com/mcascallares/confluent-data-contracts
   - https://github.com/rayokota/demo-data-contracts

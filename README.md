@@ -13,7 +13,7 @@ Have the following tools installed:
 
 ```shell
     cd env
-    docker-compose up -d
+    docker compose up -d
     cd ..
     # compile the project and move to the app folder
     mvn clean package
@@ -28,9 +28,9 @@ Creating the needed topics:
 ```shell
   # create topics
   cd env/
-  docker-compose exec broker1 kafka-topics --bootstrap-server broker1:9092 --create --topic crm.users
-  docker-compose exec broker1 kafka-topics --bootstrap-server broker1:9092 --create --topic crm.contracts 
-  docker-compose exec broker1 kafka-topics --bootstrap-server broker1:9092 --create --topic crm.generic-dlq
+  docker compose exec broker1 kafka-topics --bootstrap-server broker1:9092 --create --topic crm.users
+  docker compose exec broker1 kafka-topics --bootstrap-server broker1:9092 --create --topic crm.contracts 
+  docker compose exec broker1 kafka-topics --bootstrap-server broker1:9092 --create --topic crm.generic-dlq
   cd ..
   cd readwrite-rules-app
 ```
@@ -138,7 +138,7 @@ Create the resources
 
 ```shell
     cd env
-    docker-compose exec broker1 kafka-topics --bootstrap-server broker1:9092 --create --topic warehouse.products
+    docker compose exec broker1 kafka-topics --bootstrap-server broker1:9092 --create --topic warehouse.products
     cd ..
 ```
 
@@ -258,11 +258,11 @@ Creating the needed topics and compiling the project
 ```shell
   # create topics
   cd env/
-  docker-compose exec broker1 kafka-topics --bootstrap-server broker1:9092 --create --topic data.clients
-  docker-compose exec broker1 kafka-topics --bootstrap-server broker1:9092 --create --topic data.orders 
-  docker-compose exec broker1 kafka-topics --bootstrap-server broker1:9092 --create --topic data.products
-  docker-compose exec broker1 kafka-topics --bootstrap-server broker1:9092 --create --topic data.dlq.invalid.clients
-  docker-compose exec broker1 kafka-topics --bootstrap-server broker1:9092 --create --topic data.dlq.invalid.products
+  docker compose exec broker1 kafka-topics --bootstrap-server broker1:9092 --create --topic data.clients
+  docker compose exec broker1 kafka-topics --bootstrap-server broker1:9092 --create --topic data.orders 
+  docker compose exec broker1 kafka-topics --bootstrap-server broker1:9092 --create --topic data.products
+  docker compose exec broker1 kafka-topics --bootstrap-server broker1:9092 --create --topic data.dlq.invalid.clients
+  docker compose exec broker1 kafka-topics --bootstrap-server broker1:9092 --create --topic data.dlq.invalid.products
   cd ..
   cd global-rules-app
 ```
@@ -367,7 +367,7 @@ Finally, let's check the DLQ topics. Note that CountryCode rule does not send da
 
 ```shell
     cd env
-    docker-compose down -v && docker system prune -f
+    docker compose down -v && docker system prune -f
     cd ..
 ```
 

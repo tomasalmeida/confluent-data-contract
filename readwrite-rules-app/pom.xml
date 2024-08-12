@@ -11,7 +11,7 @@
     <artifactId>readwrite-rules-app</artifactId>
     <packaging>jar</packaging>
 
-    <name>migration-app-v2</name>
+    <name>readwrite-rules-app</name>
     <url>http://maven.apache.org</url>
 
     <build>

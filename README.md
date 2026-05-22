@@ -28,9 +28,9 @@ Creating the needed topics:
 ```shell
   # create topics
   cd env/
-  docker compose exec broker1 kafka-topics --bootstrap-server broker1:9092 --create --topic crm.users
-  docker compose exec broker1 kafka-topics --bootstrap-server broker1:9092 --create --topic crm.contracts 
-  docker compose exec broker1 kafka-topics --bootstrap-server broker1:9092 --create --topic crm.generic-dlq
+  docker compose exec broker kafka-topics --bootstrap-server broker:9092 --create --topic crm.users
+  docker compose exec broker kafka-topics --bootstrap-server broker:9092 --create --topic crm.contracts 
+  docker compose exec broker kafka-topics --bootstrap-server broker:9092 --create --topic crm.generic-dlq
   cd ..
   cd readwrite-rules-app
 ```
@@ -114,8 +114,8 @@ Check events being consumed and transformed during consumption.
 Check the DLQ topic to see the events that were not accepted by the rules and their headers.
 
 ```shell
-  kafka-console-consumer --bootstrap-server localhost:29092 \
-    --property schema.registry.url=http://localhost:8081 \
+  docker exec broker kafka-console-consumer --bootstrap-server broker:9092 \
+    --property schema.registry.url=http://schema-registry:8081 \
     --property print.timestamp=false \
     --property print.offset=false \
     --property print.partition=false \
@@ -124,6 +124,7 @@ Check the DLQ topic to see the events that were not accepted by the rules and th
     --property print.value=true \
     --topic crm.generic-dlq \
     --from-beginning
+  cd ..
 ```
 > [!IMPORTANT]
 > Note:
@@ -138,7 +139,7 @@ Create the resources
 
 ```shell
     cd env
-    docker compose exec broker1 kafka-topics --bootstrap-server broker1:9092 --create --topic warehouse.products
+    docker compose exec broker kafka-topics --bootstrap-server broker:9092 --create --topic warehouse.products
     cd ..
 ```
 
@@ -244,7 +245,7 @@ It should work now and we have a new schema version.
 #### Running consumer v2 (exclusive shell)
 
 ```shell
-  cd migration-app-v1
+  cd migration-app-v2
   java -classpath target/migration-app-v2-1.0.0-SNAPSHOT-jar-with-dependencies.jar com.tomasalmeida.data.contract.migration.ConsumerRunner
 ```
 
@@ -258,11 +259,11 @@ Creating the needed topics and compiling the project
 ```shell
   # create topics
   cd env/
-  docker compose exec broker1 kafka-topics --bootstrap-server broker1:9092 --create --topic data.clients
-  docker compose exec broker1 kafka-topics --bootstrap-server broker1:9092 --create --topic data.orders 
-  docker compose exec broker1 kafka-topics --bootstrap-server broker1:9092 --create --topic data.products
-  docker compose exec broker1 kafka-topics --bootstrap-server broker1:9092 --create --topic data.dlq.invalid.clients
-  docker compose exec broker1 kafka-topics --bootstrap-server broker1:9092 --create --topic data.dlq.invalid.products
+  docker compose exec broker kafka-topics --bootstrap-server broker:9092 --create --topic data.clients
+  docker compose exec broker kafka-topics --bootstrap-server broker:9092 --create --topic data.orders 
+  docker compose exec broker kafka-topics --bootstrap-server broker:9092 --create --topic data.products
+  docker compose exec broker kafka-topics --bootstrap-server broker:9092 --create --topic data.dlq.invalid.clients
+  docker compose exec broker kafka-topics --bootstrap-server broker:9092 --create --topic data.dlq.invalid.products
   cd ..
   cd global-rules-app
 ```
@@ -335,8 +336,8 @@ java -classpath target/global-rules-app-1.0.0-SNAPSHOT-jar-with-dependencies.jar
 Finally, let's check the DLQ topics. Note that CountryCode rule does not send data to a DLQ topic, but the ClientIdValidation and ProductIdValidation rules do.
 
 ```shell
-  kafka-console-consumer --bootstrap-server localhost:29092 \
-    --property schema.registry.url=http://localhost:8081 \
+  docker exec broker kafka-console-consumer --bootstrap-server broker:9092 \
+    --property schema.registry.url=http://schema-registry:8081 \
     --property print.timestamp=false \
     --property print.offset=false \
     --property print.partition=false \
@@ -348,8 +349,8 @@ Finally, let's check the DLQ topics. Note that CountryCode rule does not send da
 ```
 
 ```shell
-  kafka-console-consumer --bootstrap-server localhost:29092 \
-      --property schema.registry.url=http://localhost:8081 \
+  docker exec broker kafka-console-consumer --bootstrap-server broker:9092 \
+      --property schema.registry.url=http://schema-registry:8081 \
       --property print.timestamp=false \
       --property print.offset=false \
       --property print.partition=false \
